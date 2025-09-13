@@ -1,42 +1,40 @@
 #include <iostream>
-#include <cmath>
-#include <deque>
-#include <algorithm>
+#include <queue>
+#include <string>
 
 int main() {
     int n;
-    std::cin >> n;
+    if (!(std::cin >> n)) return 0;
+    std::string s;
+    std::cin >> s;
 
-    std::deque<char> dq;
-    for (int i = 0; i < n; i++) {
-        char c;
-        std::cin >> c;
-        dq.push_back(c);
+    std::queue<int> qS; // индексы Sakayanagi ('S')
+    std::queue<int> qK; // индексы Katsuragi ('K')
+
+    for (int i = 0; i < n; ++i) {
+        if (s[i] == 'S') qS.push(i);
+        else qK.push(i);
     }
 
-    while (dq.size() > 1) {
-        char front = dq.front();
-        if (front == 'K') {
-            auto it = std::find(dq.begin() + 1, dq.end(), 'S');
-            if (it != dq.end()) {
-                dq.erase(it);
-            } else {
-                dq.pop_front();
-            }
-        } else if (front == 'S') {
-            auto it = std::find(dq.begin() + 1, dq.end(), 'K');
-            if (it != dq.end()) {
-                dq.erase(it);
-            } else {
-                dq.pop_front();
-            }
-        } 
-
+    while (!qS.empty() && !qK.empty()) {
+        int iS = qS.front();
+        int iK = qK.front();
+        qS.pop();
+        qK.pop();
+        if (iS < iK) {
+            // S действует раньше, выбивает K, S возвращается в очередь
+            qS.push(iS + n);
+        } else {
+            // K действует раньше, выбивает S, K возвращается в очередь
+            qK.push(iK + n);
+        }
     }
 
-    if (dq.front() == 'K') {
-        std::cout << "KATSURAGI";
+    if (qS.empty()) {
+        std::cout << "KATSURAGI\n";
     } else {
-        std::cout << "SAKAYANAGI";
+        std::cout << "SAKAYANAGI\n";
     }
+
+    return 0;
 }
