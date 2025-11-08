@@ -1,47 +1,47 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include <bits/stdc++.h>
 #include <unordered_map>
+#include <unordered_set>
+#define ll long long
+using namespace std;
 
-const long long MOD = 1e9 + 7;
+const int mod = 1e9 + 7;
 
-std::string hashFunction(const std::string& S) {
-    long long res = 0;
-    long long p = 1;
-    for (char c : S) {
-        long long val = (int)c;
-        res = (res + (val - 47) * p) % MOD;
-        p = (p * 11) % MOD;
-        res %= MOD;
+void precount(vector<ll>& pow, int size) {
+    pow.resize(size + 1);
+    pow[0] = 1;
+    for (int i = 1; i <= size; ++i) {
+        pow[i] = (pow[i - 1] * 11) % mod;
     }
-    return std::to_string(res);
 }
-
-bool isDigitsOnly(const std::string& s) {
-    for (char c : s)
-        if (!isdigit(c)) return false;
-    return true;
+ 
+ll calc_hash(const string& s, const vector<ll>& pow) {
+    ll h = 0;
+    for (int i = 0; i < s.size(); ++i) {
+        h = (h + ((char(s[i]) + 0) - 47) * pow[i] + mod) % mod;
+    }
+    return h;
 }
 
 int main() {
-    int n;
-    std::cin >> n;
-    n *= 2;
-
-    std::vector<std::string> vec(n);
-    for (int i = 0; i < n; i++) {
-        std::cin >> vec[i];
+    int n; cin >> n;
+    string s1;
+    vector<string> v2;
+    unordered_set<string> st;
+    for (int i = 0; i < 2 * n; i++) {
+        cin >> s1;
+        v2.push_back(s1);
+        st.insert(s1);
     }
-
-    std::unordered_map<std::string, bool> hashExists;
-    for (auto &s : vec)
-        hashExists[s] = true;
-
-    for (auto &s : vec) {
-        std::string h = hashFunction(s);
-        if (hashExists.count(h)) {
-            std::cout << "Hash of string \"" << s << "\" is " << h << "\n";
-            hashExists.erase(h);
+    vector <ll> pow;
+    precount(pow, 100);
+    int count = 0;
+    for (string s : v2) {
+        if (count == n) break;
+        ll h = calc_hash(s, pow);
+        string hs = to_string(h);
+        if (st.count(hs)) {
+            cout << "Hash of string \"" << s << "\" is " << hs << endl;
+            count++;
         }
     }
 
